@@ -95,7 +95,8 @@ func logger(logs chan *http.Request) {
 			remote_port		UInt16,
 			buffer_used		UInt32,
 			buffer_size		UInt32,
-			response		String
+			response		String,
+			code			UInt16
 		) ENGINE = MergeTree(date, (dt, remote_host, remote_port), 8192)
 	`)
 
@@ -118,8 +119,9 @@ func logger(logs chan *http.Request) {
 				remote_port,
 				buffer_used,
 				buffer_size,
-				response
-				) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+				response,
+				code
+				) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -154,7 +156,8 @@ func logger(logs chan *http.Request) {
 				remotePort,
 				len(logs),
 				bufferSize,
-				response,
+				generateAnswer(i),
+				redirectCode,
 			); err != nil {
 				log.Println(err)
 			}
